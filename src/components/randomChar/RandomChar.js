@@ -3,7 +3,7 @@ import mjolnir from '../../resources/img/mjolnir.png';
 
 import { useEffect, useState } from 'react';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
@@ -12,7 +12,7 @@ const RandomChar = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const marvelService = new MarvelService();
+    const marvelService = useMarvelService();
 
     useEffect(() => {
         getRandomChar();
