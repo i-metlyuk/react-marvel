@@ -5,42 +5,36 @@ import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
-import { Component } from "react";
+import { useState } from "react";
 import PropTypes from 'prop-types';
 
-class App extends Component {
-    state = {
-        charId: null,
+const App = () => {
+    const [charId, setCharId] = useState(null)
+
+    const onCharacterSelected = (id) => {
+        setCharId(id);
     }
 
-    onCharacterSelected = (id) => {
-        this.setState({
-            charId: id
-        })
-    }
-
-    render() {
-        return (
-            <div className="app">
-                <AppHeader/>
-                <main>
+    return (
+        <div className="app">
+            <AppHeader/>
+            <main>
+                <ErrorBoundary>
+                    <RandomChar/>
+                </ErrorBoundary>
+                <div className="char__content">
                     <ErrorBoundary>
-                        <RandomChar/>
+                        <CharList onCharacterSelected={onCharacterSelected}/>
                     </ErrorBoundary>
-                    <div className="char__content">
-                        <ErrorBoundary>
-                            <CharList onCharacterSelected={this.onCharacterSelected}/>
-                        </ErrorBoundary>
-                        <ErrorBoundary>
-                            <CharInfo charId={this.state.charId}/>
-                        </ErrorBoundary>
-                        
-                    </div>
-                    <img className="bg-decoration" src={decoration} alt="vision"/>
-                </main>
-            </div>
-        )
-    }
+                    <ErrorBoundary>
+                        <CharInfo charId={charId}/>
+                    </ErrorBoundary>
+                    
+                </div>
+                <img className="bg-decoration" src={decoration} alt="vision"/>
+            </main>
+        </div>
+    )
 }
 
 CharInfo.propTypes = {
