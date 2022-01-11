@@ -10,10 +10,8 @@ import CharSearchForm from '../charSearchForm/CharSearchForm';
 
 const CharInfo = (props) => {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
 
-    const marvelService = useMarvelService();
+    const {loading, error, getCharacter, clearError} = useMarvelService();
 
     useEffect(() => {
         updateCharacter();
@@ -26,26 +24,14 @@ const CharInfo = (props) => {
             return;
         }
 
-        onCharLoading();
+        clearError();
 
-        marvelService
-            .getCharacter(charId)
-            .then(onCharacterdLoaded)
-            .catch(onError);
+        getCharacter(charId)
+            .then(onCharacterdLoaded);
     }
 
     const onCharacterdLoaded = (char) => {
         setChar(char);
-        setLoading(false);
-    }
-
-    const onCharLoading = () => {
-        setLoading(true);
-    }
-
-    const onError = () => {
-        setLoading(false);
-        setError(true);
     }
 
     const skeleton = char || loading || error ? null : <Skeleton></Skeleton>;
