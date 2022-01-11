@@ -11,19 +11,14 @@ const setContent = (process, Component, newItemLoading) => {
     switch (process) {
         case 'waiting': 
             return <Spinner></Spinner>;
-            break;
         case 'loading':
             return newItemLoading ? <Component></Component> : <Spinner></Spinner>;
-            break;
         case 'error':
             return <ErrorMessage></ErrorMessage>;
-            break;
         case 'confirmed':
             return <Component></Component>;
-            break;
         default:
             throw new Error();
-            break;
     }
 }
 
