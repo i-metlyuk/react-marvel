@@ -4,15 +4,12 @@ import mjolnir from '../../resources/img/mjolnir.png';
 import { useEffect, useState } from 'react';
 
 import useMarvelService from '../../services/MarvelService';
-import Spinner from '../spinner/Spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import setContent from '../../utils/setContent';
 
 const RandomChar = () => {
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
 
-    const marvelService = useMarvelService();
+    const {getCharacter, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         getRandomChar();
@@ -25,36 +22,21 @@ const RandomChar = () => {
 
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false)
-    }
-
-    const onCharLoading = () => {
-        setLoading(true);
-    }
-
-    const onError = () => {
-        setLoading(false);
-        setError(true)
     }
 
     const getRandomChar = () => {
-        onCharLoading();
+        clearError();
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
-        marvelService
-            .getCharacter(id)
+        getCharacter(id)
             .then(onCharLoaded)
-            .catch(onError)
+            .then(() => setProcess('confirmed'));
     }
-
-    const errorMessage = error ? <ErrorMessage></ErrorMessage> : null;
-    const spinner = loading ? <Spinner></Spinner> : null;
-    const content = !(loading || error) ? <View char={char}></View> : null;
 
     return (
         <div className="randomchar">
-            {errorMessage}
-            {spinner}
-            {content}
+            {
+                setContent(process, View, char)
+            }
             <div className="randomchar__static">
                 <p className="randomchar__title">
                     Random character for today!<br/>
@@ -74,8 +56,8 @@ const RandomChar = () => {
     )
 }
 
-const View = ({char}) => {
-    const {name, description, thumbnail, wiki, homepage} = char;
+const View = ({data}) => {
+    const {name, description, thumbnail, wiki, homepage} = data;
     let style = null;
 
     if (thumbnail.indexOf('image_not') > -1) {

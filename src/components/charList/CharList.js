@@ -7,25 +7,44 @@ import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting': 
+            return <Spinner></Spinner>;
+            break;
+        case 'loading':
+            return newItemLoading ? <Component></Component> : <Spinner></Spinner>;
+            break;
+        case 'error':
+            return <ErrorMessage></ErrorMessage>;
+            break;
+        case 'confirmed':
+            return <Component></Component>;
+            break;
+        default:
+            throw new Error();
+            break;
+    }
+}
+
 const CharList = (props) => {
     const [chars, setChars] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffest] = useState(210);
     const [charsEnded, setCharsEnded] = useState(false);
 
-    const marvelService = useMarvelService();
+    const {loading, error, clearError, process, setProcess, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
     }, [])
 
-    const onRequest = (offset) => {
-        onCharacterListLoading();
-        marvelService.getAllCharacters(offset)
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+
+        getAllCharacters(offset)
             .then(onCharactersLoaded)
-            .catch(onError);
+            .then(() => setProcess('confirmed'));
     }
 
     const onCharacterListLoading = () => {
@@ -40,15 +59,10 @@ const CharList = (props) => {
         }
 
         setChars(chars => [...chars, ...newChars])
-        setLoading(loading => false);
+        clearError()
         setNewItemLoading(newItemLoading => false);
         setOffest(offset => offset + 9);
         setCharsEnded(charsEnded => ended);
-    }
-
-    const onError = () => {
-        setLoading(loading => false);
-        setError(error => true);
     }
 
     const itemRefs = useRef([]);
@@ -98,19 +112,11 @@ const CharList = (props) => {
         )
     }
 
-    const items = renderItems(chars);
-
-    const errorMessage = error ? <ErrorMessage></ErrorMessage> : null;
-
-    const spinner = loading ? <Spinner></Spinner> : null;
-
-    const content = !(loading || error) ? items : null;
-
     return (
         <div className="char__list">
-            {errorMessage}
-            {spinner}
-            {content}
+            {
+                setContent(process, () => renderItems(chars), newItemLoading)
+            }
             <button
                 disabled={newItemLoading}
                 style={{'display': charsEnded ? 'none' : 'block'}}
