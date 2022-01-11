@@ -3,6 +3,9 @@ import AppHeader from "../appHeader/AppHeader";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import Spinner from "../spinner/Spinner";
+import SinglePage from "../pages/SinglePage";
+import SingleComicLayout from '../pages/singleComicLayout/SingleComicLayout';
+import SingleCharacterLayour from '../pages/singleCharacterLayout/SingleCharacterLayout';
 
 const Page404 = lazy(() => import('../pages/404'));
 const MainPage = lazy(() => import('../pages/MainPage'));
@@ -23,18 +26,26 @@ const App = () => {
                                 >
                                 <MainPage></MainPage>
                             </Route>
-                            
+
                             <Route
                                 exact
                                 path="/comics"
                                 >
                                 <ComicsPage></ComicsPage>
                             </Route>
+                            
+                            <Route
+                                exact
+                                path="/comics/:id"
+                                >
+                                <SinglePage Component={SingleComicLayout} dataType={'comic'}></SinglePage>
+                            </Route>
 
                             <Route
-                                path='/comics/:comicId'
+                                exact
+                                path='/characters/:id'
                                 >
-                                <SingleComicPage></SingleComicPage>
+                                <SinglePage Component={SingleCharacterLayour} dataType={'character'}></SinglePage>
                             </Route>
 
                             <Route
